@@ -1,0 +1,17 @@
+PostgreSQL - Ope source Relational database
+Should use the same Python Version in development and in Production
+Use the same NodeJs version in development and Production
+Use the same Database in development and Production
+
+
+
+
+# Deploying Options
+1. Heroku
+2. AWS
+3. Digital Ocean
+4. Render
+
+# Steps to Deploy
+1. Navigate to Render Dashboard
+    On Render we have to use PostgreSQL as our database

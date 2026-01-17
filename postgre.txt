@@ -1,0 +1,132 @@
+ALWAYS ENSURE YOU ARE USING PYTHON VERSION 3.12.6 or BELOW
+
+
+# Installing Postgre in WSL
+ sudo apt update
+ sudo apt install postgresql postgresql-contrib libpq-dev
+
+# confirm that postgres was installed
+ psql --version
+
+# starting Postgre service
+  sudo service postgresql start
+
+# check operating system username
+ whoami
+
+# u have to create a postgres user with the name
+ sudo -u postgres -i      -- this opens postgre cli
+
+# from the Postgres cli run this command
+ createuser -sr kelvin
+
+use ctl + d --- to logout
+
+
+
+# Creating Render Database
+on the Render dashboard click Add new (Postgres)
+Give a name of the database
+select the postgre version
+submit by clicking Create Database
+leave the database page open as we will need to copy information from it as we proceed
+
+Note: Hyphens are not used when creating the database name u can use undercores instead
+
+
+
+
+# Connecting to Render database from the terminal
+ copy the PSQL command from Render database page under "connections section" and paste it in our terminal to connect us to the remote database
+
+type: 
+ \l    --- to list the databases
+
+# Creating the databse for our Application we will run these commmand
+ CREATE DATABASE bird_app_db;       ---- bird_app_db is our application databse name
+
+ run \l to see if the database have been created
+
+Exit psql using \q command
+
+
+
+
+
+# Creating A Flask app to Deploy in this case our bird-app is the Application
+ mkdir bird-app && cd $_
+ pipenv install Flask gunicorn psycopg2-binary Flask-SQLAlchemy Flask-Migrate SQLAlchemy-Serializer Flask-RESTful
+
+
+
+ # we can check all the versions with this command
+ pipenv requirements
+
+# this command to create a file with all the modules
+ pipenv requirements > requirements.txt
+
+
+
+
+
+
+ # Assigning DATABASE_URI
+ on our Render database we will copy the External Database URL
+
+ We will modify the URL such that
+ postgresql://my_database_q4by_user:k56hCI97srKeZ2oflebGhHOic97rZn25@dpg-d2m7gcnfte5s739fsvlg-a.oregon-postgres.render.com/my_database_q4by will be:
+
+ export DATABASE_URI=postgresql://my_database_q4by_user:k56hCI97srKeZ2oflebGhHOic97rZn25@dpg-d2m7gcnfte5s739fsvlg-a.oregon-postgres.render.com/my_database_q4by
+
+
+
+
+# Building Demo App   --- run these commands
+ flask db init
+ flask db revision --autogenerate -m'create table birds'
+ flask db upgrade         // this creates new PostgreSQL database associated with the application
+ python seed.py      // if neccessary
+
+
+
+# To ensure the app works locally before deploying run this command
+ gunicorn app:app
+
+ Try and Navigate to http://127.0.0.1:8000/
+ NOTE: gunicorn runs on port 8000 by default.
+
+
+
+
+
+# Deploying    ---- run these commands
+ git init 
+ git add .
+ git commit -m 'Initial commit'
+ 
+
+ go to github and start creating a new repository (public) then run these:
+  git remote add <remote_name> <remote_repo_url>
+  git push -u <remote_name> <local_branch_name>
+
+
+
+
+
+
+# Configuring the Environment and Deploying
+Head back to Render dashboard 
+click New+ to make a new web service
+
+set up ENVIRONMENT VARIBLES
+
+PYTHON_VERSION = 3.12.6
+DATABASE_URI = External Database URL (from render)
+
+Now go ahead and deploy New Web service
+
+
+
+# Note
+You don't have to run migrations again since the database already exists on the server
+You can run migrations if only you created a new Migration file.
